@@ -36,6 +36,8 @@ def main():
 
     text_timer = 0
     font = pgy.font.Font(None, font_size)
+    snow1_direction = .1
+    snow2_direction = -.05
 
     while True:
 
@@ -54,11 +56,9 @@ def main():
         for i in range(len(snowing1)):
             pgy.draw.circle(game_screen, dark_grey, snowing1[i], 1)
             snowing1[i][1] += 1
-            if ((snowing1[i][1] % 3) / (i + 1)) >= 7:
-                snowing1[i][0] += .1
-
-            if ((snowing1[i][1] % 3) / (i + 1)) < 7:
-                snowing1[i][0] -= .1
+            snowing1[i][0] += snow1_direction
+            if (snowing1[i][1] % 2) == 0:
+                snow1_direction *= -1
 
             if snowing1[i][1] > 700:
                 snow1_x = random.randrange(0, scrn_width)
@@ -71,11 +71,9 @@ def main():
             pgy.draw.circle(game_screen, mid_grey, snowing2[i], 1)
             snowing2[i][1] += 1
 
-            if ((snowing2[i][1] % 3) / (i + 1)) >= 7:
-                snowing2[i][0] += .05
-
-            if ((snowing2[i][1] % 3) / (i + 1)) < 7:
-                snowing2[i][0] -= .05
+            snowing2[i][0] += snow2_direction
+            if (snowing2[i][1] % 2) == 0:
+                snow2_direction *= -1
 
             if snowing2[i][1] > 700:
                 snow2_x = random.randrange(0, scrn_width)
