@@ -32,18 +32,31 @@ for i in range(20):
 
 pgy.display.set_caption('Behemoth of Drought')
 
+hellhound_image = pgy.image.load(os.path.join('sprite-files','hellhound.png'))
+pgy.display.set_icon(hellhound_image)
+
+def collide(obj1, obj2):
+    offset_x = obj2.x - obj1.x
+    offset_y = obj2.y - obj1.y
+    return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
+
 class Hellhound:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.Hellhound_img = pgy.image.load(os.path.join('sprite-files','hellhound.png'))
+        self.Hellhound_img = hellhound_image
         self.dead = False
+        self.mask = pgy.mask.from_surface(self.Hellhound_img)
 
     def draw(self, surface):
-        surface.blit(self.Hellhound_img, (self.x, self.y))
+        if self.dead == False:
+            surface.blit(self.Hellhound_img, (self.x, self.y))
 
     def move(self, direction):
         self.x += direction
+
+    def collision(self, obj):
+        return collide(obj, self)
 
 class Traitor:
     def __init__(self, x, y):
@@ -68,6 +81,22 @@ class Foliage:
     def move(self, direction):
         self.x += direction
 
+SWING_IMG = pgy.image.load(os.path.join('sprite-files','flameburst.png'))
+
+class Destructive_Swing:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.large = False
+        self.Swing_img = SWING_IMG
+        self.mask = pgy.mask.from_surface(self.Swing_img)
+
+    def draw(self, surface):
+        surface.blit(self.Swing_img, (self.x, self.y))
+
+    def collision(self, obj):
+        obj.dead = True
+        return collide(obj, self)
 
 def main():
 
@@ -84,6 +113,7 @@ def main():
     snow2_direction = -.05
 
     The_Traitor = Traitor(300, 645)
+    Traitor_attack = Destructive_Swing(300,300)
 
     level = 0
 
@@ -94,6 +124,10 @@ def main():
 
     Hellhound_quant = 5
     Foliage_quant  = 1
+
+    def sword_swing():
+        Traitor_attack.draw(game_screen)
+        pgy.display.update
 
     def game_screen_update(my_text, snow_direct1, snow_direct2):
         game_screen.fill(black)
@@ -143,7 +177,7 @@ def main():
         if game_over:
             lose_text = font.render("Your fight has ended. Press C to Continue playing or X to eXit."
             , 1 , white)
-            game_screen.blit(lose_text, (SCRN_WIDTH / 2 - lose_text.get_width()/2), 400)
+            game_screen.blit(lose_text, (300, 400))
 
 
         pgy.display.update()
@@ -172,6 +206,13 @@ def main():
 
         text_timer += 1
 
+                # CONTROLS
+        key_press = pgy.key.get_pressed()
+        if key_press[pgy.K_x]:
+            sword_swing()
+        if key_press[pgy.K_c]:
+            sword_swing()
+
         game_screen_update(dialogue_text, snow1_direction, snow2_direction)
 
         if len(Hellhound_positions) < 5:
@@ -182,13 +223,12 @@ def main():
                 hellhound = Hellhound(random.randrange(2000, 3000), 645)
                 Hellhound_positions.append(hellhound)
 
-        # CONTROLS
-        # key_press = pgy.key.get_pressed()
-        # if key_press[pgy.K_x]:
-        # if key_press[pgy.K_c]:
-
-        for hellhound in Hellhound_positions:
+        for hellhound in Hellhound_positions[:]:
             hellhound.move(Hellhound_direction)
+            if hellhound.x == 300:
+                game_over = True
+            if hellhound.collision(Traitor_attack):
+                Hellhound_positions.remove(hellhound)
 
         clock.tick(FPS)
 
