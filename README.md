@@ -10,4 +10,7 @@ Snowfall display using Pygame in Python
 https://www.geeksforgeeks.org/snowfall-display-using-pygame-in-python/
 
 
+required installs:
+pip install pygame
 
+![Demo_gif](p04-demo.gif)

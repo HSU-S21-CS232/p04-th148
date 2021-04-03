@@ -17,10 +17,10 @@ mid_grey = (150,150,150)
 lite_grey = (200,200,200)
 orange = (255,225,143)
 red = (203,10,10)
-blue = (188,255,188)
-green = (10,10,203)
+blue = (168,168,255)
+green = (10,203,10)
 yellow = (213,213,0)
-cyan = (0,240,240)
+cyan = (0,255,255)
 purple = (203,10,203)
 font_size = 24
 L_font_size = 60
@@ -139,6 +139,8 @@ def main():
     Hellhound_quant = 5
     Foliage_quant  = 1
 
+    game_over_timer = 160
+
     def color_text_generator(test_text, text_color):
         color_text = L_font.render(f'{test_text}'
         , 1 , text_color)
@@ -194,7 +196,8 @@ def main():
 
 
         if flame_timer > 0:
-            Traitor_attack.x = 330
+            if Traitor_attack.x > 344:
+                Traitor_attack.x = 330
             Traitor_attack.y = 650
             Traitor_attack.draw(game_screen)
 
@@ -238,7 +241,7 @@ def main():
             hellhound.draw(game_screen)
 
         if game_over:
-            lose_text = font.render("Your fight has ended. Press C to Continue playing or X to eXit."
+            lose_text = font.render("Your fight has ended. Prepare to exit..."
             , 1 , white)
             game_screen.blit(lose_text, (300, 600))
 
@@ -252,6 +255,13 @@ def main():
                 pgy.quit()
                 sys.exit()
 
+        if game_over_timer < 0:
+            pgy.quit()
+            sys.exit()
+
+        if game_over:
+            game_over_timer -= 1
+
         color_timer += 1
 
         if attack_cooldown > 0:
@@ -260,8 +270,10 @@ def main():
         if color_timer < 60:
             rand_int1 = 1
             rand_int2 = 1
+            do_match = True
 
         if (color_timer % 60) == 0:
+            do_match = True
             rand_int0 = random.randint(1,2)
             if rand_int0 == 1:
                 rand_int1 = one_thru_six()
@@ -304,18 +316,18 @@ def main():
             if attack_cooldown == 0:
                 if not do_match:
                     flame_timer = 14
-                    attack_cooldown += 32
+                    attack_cooldown += 36
                 elif do_match:
                     Hellhound_direction -= 1
-                    attack_cooldown += 16
+                    attack_cooldown += 22
         if key_press[pgy.K_c]:
             if attack_cooldown == 0:
                 if do_match:
                     flame_timer = 14
-                    attack_cooldown += 32
+                    attack_cooldown += 36
                 elif not do_match:
                     Hellhound_direction -= 1
-                    attack_cooldown += 16
+                    attack_cooldown += 22
 
         game_screen_update(dialogue_text, snow1_direction, snow2_direction, rand_int1, rand_int2)
 
@@ -327,9 +339,11 @@ def main():
                 hellhound = Hellhound(random.randrange(2000, 2600), 645)
                 Hellhound_positions.append(hellhound)
 
+        Traitor_attack.x += 1
+
         for hellhound in Hellhound_positions[:]:
             hellhound.move(Hellhound_direction)
-            if hellhound.x == 340:
+            if hellhound.x < 340:
                 game_over = True
             if hellhound.collision(Traitor_attack):
                 Hellhound_positions.remove(hellhound)
