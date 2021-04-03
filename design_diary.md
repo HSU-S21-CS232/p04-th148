@@ -10,3 +10,6 @@ than that it was not too painful to code this project! It did take about
 
 My only regrets are: I want to add music and animations to the game now. But...
 I will save that for another day.
+
+Actually, I also regret not implementing foliage. Some of the code from starting
+that is still in there, trapped in limbo now.
